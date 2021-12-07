@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Python 3.7 or greater
 
+from dateutil.parser import parse
+
 import argparse
 import datetime
 import pathlib
@@ -16,9 +18,9 @@ def dir_path(string):
 
 def input_date(string):
     try:
-        return datetime.datetime.fromisoformat(string)
-    except ValueError:
-        print(f'Could not parse timestamp {string}, try matching the format 2021-12-01T00:00:00+00:00')
+        return parse(string)
+    except ParserError:
+        print(f'Could not parse timestamp {string}')
         raise
 
 
