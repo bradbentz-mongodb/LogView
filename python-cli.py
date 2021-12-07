@@ -5,6 +5,7 @@ import argparse
 import datetime
 import pathlib
 import os
+import log_parser
 
 
 def dir_path(string):
@@ -30,15 +31,7 @@ parser.add_argument('--end-time', type=input_date, help='show logs before this t
 
 def main(args):
     directory_path = pathlib.Path(args.directory).resolve()
-    log_string = f'Viewing logs in {directory_path}'
-
-    if args.start_time:
-        log_string += f' starting from {args.start_time}'
-    if args.end_time:
-        log_string += f' ending at {args.end_time}'
-
-    print(log_string)
-
+    log_parser.main(directory_path, args.start_time, args.end_time)
 
 if __name__ == '__main__':
     try:
