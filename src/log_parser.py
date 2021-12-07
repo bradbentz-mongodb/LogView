@@ -1,5 +1,5 @@
 import re
-from dateutil.parser import *
+from dateutil.parser import parse
 import heapq
 import os
 
@@ -17,6 +17,12 @@ class LogItem:
         if exclusion_regex:
             if any(re.match(exclusion_regex, line) for line in self.log_lines):
                 return False
+        return True
+    def between_timestamps(self, start_timestamp, end_timestamp):
+        if start_timestamp and self.timestamp < start_timestamp:
+            return False
+        if end_timestamp and self.timestamp > end_timestamp:
+            return False
         return True
     def __str__(self):
         return f"filename:{self.filename}\n timestamp:{self.timestamp}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
