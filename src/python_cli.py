@@ -22,10 +22,17 @@ def input_date(string):
         raise
 
 
+def prepare_patterns(pattern_list):
+    joined_patterns = '|'.join(pattern_list)
+    return f'.*({joined_patterns}).*'
+
+
 parser = argparse.ArgumentParser(description='Unified log view')
-parser.add_argument('directory', metavar='directory', type=dir_path, help='directory containing log files to view')
+parser.add_argument('directory', metavar='directory', type=dir_path, help='directory containing log files to view', default='.', nargs='?')
 parser.add_argument('--start-time', type=input_date, help='show logs after this time')
 parser.add_argument('--end-time', type=input_date, help='show logs before this time')
+parser.add_argument('--match-pattern', type=str, action='extend', help='show logs matching the specified pattern', nargs='*')
+parser.add_argument('--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*')
 
 
 def main(args):
@@ -38,6 +45,8 @@ def main(args):
         log_string += f' ending at {args.end_time}'
 
     print(log_string)
+    print(prepare_patterns(args.match_pattern))
+    print(prepare_patterns(args.exclude_pattern))
 
 
 if __name__ == '__main__':
