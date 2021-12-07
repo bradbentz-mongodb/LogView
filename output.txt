@@ -1,0 +1,20 @@
+[filename:test1.log]
+ timestamp:0001-12-05 07:56:10.452000+00:00
+	log_lines:['[java] 0001-12-05T07:56:10.452+0000 LINE 0']
+		log_line_length:1
+
+[filename:test.log]
+ timestamp:2021-12-05 07:56:10.452000+00:00
+	log_lines:['[java] 2021-12-05T07:56:10.452+0000 LINE 1', 'some line to be grouped with LINE 1', 'another line to be grouped with LINE 1']
+		log_line_length:3
+
+[filename:test1.log]
+ timestamp:2126-12-05 07:56:10.452000+00:00
+	log_lines:['[java] 2126-12-05T07:56:10.452+0000 LINE 2']
+		log_line_length:1
+
+[filename:test.log]
+ timestamp:2222-12-05 07:56:10.452000+00:00
+	log_lines:['[java] 2222-12-05T07:56:10.452+0000 LINE 3']
+		log_line_length:1
+
