@@ -11,7 +11,6 @@ A python cli containing log view utility functions. Pass in a directory of logs 
 Sort logs in a given directory by timestamp.
 ```
 ./python-cli.py .
-
 ```
 
 Invalid directory
@@ -24,4 +23,13 @@ Specify start and end times
 ```
 ./python-cli.py . --start-time 2021-12-01T00:00:00+00:00 --end-time 2021-12-05T00:00:00+00:00
 Viewing logs in /Users/brad/LogView starting from 2021-12-01 00:00:00+00:00 ending at 2021-12-05 00:00:00+00:00
+```
+
+
+## Linting
+
+To lint this project, run ./lint.sh from the project directory.
+
+```
+./lint.sh
 ```
