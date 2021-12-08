@@ -49,10 +49,17 @@ def main(args):
         log_string += f' ending at {args.end_time}'
 
     print(log_string)
-    print(prepare_patterns(args.match_pattern))
-    print(prepare_patterns(args.exclude_pattern))
 
-    log_parser.main(directory_path, args.start_time, args.end_time, prepare_patterns(args.match_pattern), prepare_patterns(args.exclude_pattern))
+    match_pattern = None
+    exclude_pattern = None
+    if args.match_pattern:
+        match_pattern = prepare_patterns(args.match_pattern)
+        print(match_pattern)
+    if args.exclude_pattern:
+        exclude_pattern = prepare_patterns(args.exclude_pattern)
+        print(exclude_pattern)
+
+    log_parser.main(directory_path, args.start_time, args.end_time, match_pattern, exclude_pattern)
 
 if __name__ == '__main__':
     try:

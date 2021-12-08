@@ -5,8 +5,8 @@ import os
 
 timestamp_pattern ='\\d{4}\\-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}'
 extracted_lines = []
-inclusion_regex = '.*(ERROR|WARN).*'
-exclusion_regex = '.*DEBUG.*'
+inclusion_regex = None
+exclusion_regex = None
 start_time = None
 end_time = None
 
@@ -42,14 +42,16 @@ def keyfunc(log_item):
 def extract_timestamp(line):
     timestamp_string = re.search(timestamp_pattern, line)
     if timestamp_string is not None:
-        # get first occurrence of timestamp
+        # gets first occurrence of timestamp
         # TODO: handle edge case where log line doesn't actually have a timestamp but there is a timestamp in the log message
         return parse(timestamp_string.group(0))
     return None
 
-def main(directory_path, start_time=None, end_time=None):
+def main(directory_path, start_time=None, end_time=None, match_pattern=None, exclude_pattern=None):
     start_time = start_time
     end_time = end_time
+    match_pattern = match_pattern
+    exclude_pattern = exclude_pattern
     for filename in os.listdir(directory_path):
         if filename.endswith('.log'):
             with open(filename) as log_input:
