@@ -54,7 +54,8 @@ def main(directory_path, start_time=None, end_time=None, match_pattern=None, exc
     exclude_pattern = exclude_pattern
     for filename in os.listdir(directory_path):
         if filename.endswith('.log'):
-            with open(filename) as log_input:
+            file_path = os.path.join(directory_path, filename)
+            with open(file_path) as log_input:
                 extracted_lines_by_file = []
                 current_log_item = None
                 for line in log_input:
