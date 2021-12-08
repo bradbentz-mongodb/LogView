@@ -9,18 +9,17 @@ class ParserConfig:
     """
     Configuration class for a log parser.
     """
+
     directory: str
     start_time: datetime
     end_time: datetime
     match_patterns: List[str] = field(default_factory=lambda: [])
     exclude_patterns: List[str] = field(default_factory=lambda: [])
 
-
     @staticmethod
     def prepare_patterns(pattern_list):
         joined_patterns = '|'.join(pattern_list)
         return f'.*({joined_patterns}).*'
-
 
     @property
     def match_pattern(self):
@@ -33,4 +32,3 @@ class ParserConfig:
         if self.exclude_patterns is None or len(self.exclude_patterns) == 0:
             return None
         return self.prepare_patterns(self.exclude_patterns)
-

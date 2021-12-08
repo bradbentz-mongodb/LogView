@@ -33,17 +33,28 @@ def prepare_patterns(pattern_list):
 
 
 parser = argparse.ArgumentParser(description='Unified log view')
-parser.add_argument('directory', metavar='directory', type=dir_path, help='directory containing log files to view', default='.', nargs='?')
+parser.add_argument(
+    'directory',
+    metavar='directory',
+    type=dir_path,
+    help='directory containing log files to view',
+    default='.',
+    nargs='?',
+)
 parser.add_argument('--start-time', type=input_date, help='show logs after this time')
 parser.add_argument('--end-time', type=input_date, help='show logs before this time')
-parser.add_argument('--match-pattern', type=str, action='extend', help='show logs matching the specified pattern', nargs='*')
-parser.add_argument('--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*')
+parser.add_argument(
+    '--match-pattern', type=str, action='extend', help='show logs matching the specified pattern', nargs='*'
+)
+parser.add_argument(
+    '--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*'
+)
 parser.add_argument('-c', '--config', type=argparse.FileType('r', encoding='UTF-8'), help='configuration file')
 
 
 def main(args):
     directory_path = pathlib.Path(args.directory).resolve()
-    
+
     log_string = f'Viewing logs in {directory_path}'
 
     if args.start_time:
@@ -57,9 +68,12 @@ def main(args):
         print(f'Reading from configuration file {args.config}')
         return
 
-    parser_config = ParserConfig(directory_path, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern)
+    parser_config = ParserConfig(
+        directory_path, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern
+    )
 
     log_parser.main(parser_config)
+
 
 if __name__ == '__main__':
     try:

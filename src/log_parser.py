@@ -3,18 +3,16 @@ from dateutil.parser import parse
 import heapq
 import os
 
-timestamp_pattern ='\\d{4}\\-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}'
+timestamp_pattern = '\\d{4}\\-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}'
 extracted_lines = []
-inclusion_regex = None
-exclusion_regex = None
-start_time = None
-end_time = None
 
 
 def include_log_item(log_item, parser_config):
     if log_item is None:
         return False
-    return log_item.matches_regex(parser_config.match_pattern, parser_config.exclude_pattern) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time)
+    return log_item.matches_regex(
+        parser_config.match_pattern, parser_config.exclude_pattern
+    ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time)
 
 
 class LogItem:
