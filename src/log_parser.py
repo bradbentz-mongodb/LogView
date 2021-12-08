@@ -10,6 +10,13 @@ exclusion_regex = None
 start_time = None
 end_time = None
 
+
+def include_log_item(log_item, parser_config):
+    if log_item is None:
+        return False
+    return log_item.matches_regex(parser_config.match_pattern, parser_config.exclude_pattern) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time)
+
+
 class LogItem:
     def __init__(self, filename, timestamp, log_line):
         self.filename = filename
@@ -25,14 +32,12 @@ class LogItem:
             if any(re.match(exclusion_regex, line) for line in self.log_lines):
                 return False
         return True
-    def between_timestamps(self):
+    def between_timestamps(self, start_time, end_time):
         if start_time and self.timestamp < start_time:
             return False
         if end_time and self.timestamp > end_time:
             return False
         return True
-    def include_log_item(self):
-        return self.matches_regex(inclusion_regex, exclusion_regex) and self.between_timestamps()
     def __str__(self):
         timestamp_string = self.timestamp.isoformat()
         return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
@@ -48,11 +53,10 @@ def extract_timestamp(line):
         return parse(timestamp_string.group(0))
     return None
 
-def main(directory_path, start_time=None, end_time=None, match_pattern=None, exclude_pattern=None):
-    start_time = start_time
-    end_time = end_time
-    match_pattern = match_pattern
-    exclude_pattern = exclude_pattern
+def main(parser_config):
+
+    directory_path = parser_config.directory
+
     for filename in os.listdir(directory_path):
         if filename.endswith('.log'):
             file_path = os.path.join(directory_path, filename)
@@ -63,14 +67,14 @@ def main(directory_path, start_time=None, end_time=None, match_pattern=None, exc
                     line = line.strip()
                     timestamp = extract_timestamp(line)
                     if timestamp is not None:
-                        if current_log_item is not None and current_log_item.include_log_item():
+                        if include_log_item(current_log_item, parser_config):
                             extracted_lines_by_file.append(current_log_item)
                         current_log_item = LogItem(filename, timestamp, line)
                     else:
                         # ignores initial log lines without associated timestamps
                         if current_log_item is not None:
                             current_log_item.append_log_line(line)
-                if current_log_item is not None and current_log_item.include_log_item():
+                if include_log_item(current_log_item, parser_config):
                     extracted_lines_by_file.append(current_log_item)
                 extracted_lines.append(extracted_lines_by_file)
 

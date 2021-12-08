@@ -9,6 +9,8 @@ import pathlib
 import os
 import log_parser
 
+from parser_config import ParserConfig
+
 
 def dir_path(string):
     if os.path.isdir(string):
@@ -36,6 +38,7 @@ parser.add_argument('--start-time', type=input_date, help='show logs after this 
 parser.add_argument('--end-time', type=input_date, help='show logs before this time')
 parser.add_argument('--match-pattern', type=str, action='extend', help='show logs matching the specified pattern', nargs='*')
 parser.add_argument('--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*')
+parser.add_argument('-c', '--config', type=argparse.FileType('r', encoding='UTF-8'), help='configuration file')
 
 
 def main(args):
@@ -50,20 +53,18 @@ def main(args):
 
     print(log_string)
 
-    match_pattern = None
-    exclude_pattern = None
-    if args.match_pattern:
-        match_pattern = prepare_patterns(args.match_pattern)
-        print(match_pattern)
-    if args.exclude_pattern:
-        exclude_pattern = prepare_patterns(args.exclude_pattern)
-        print(exclude_pattern)
+    if args.config:
+        print(f'Reading from configuration file {args.config}')
+        return
 
-    log_parser.main(directory_path, args.start_time, args.end_time, match_pattern, exclude_pattern)
+    parser_config = ParserConfig(directory_path, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern)
+
+    log_parser.main(parser_config)
 
 if __name__ == '__main__':
     try:
         args = parser.parse_args()
         main(args)
     except Exception as e:
+        raise
         print(e)
