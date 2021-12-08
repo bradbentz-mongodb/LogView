@@ -34,7 +34,8 @@ class LogItem:
     def include_log_item(self):
         return self.matches_regex(inclusion_regex, exclusion_regex) and self.between_timestamps()
     def __str__(self):
-        return f"[filename:{self.filename}]\n timestamp:{self.timestamp}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
+        timestamp_string = self.timestamp.isoformat()
+        return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
 
 def keyfunc(log_item):
     return log_item.timestamp
