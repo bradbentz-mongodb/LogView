@@ -25,6 +25,33 @@ Specify start and end times
 Viewing logs in /Users/brad/LogView starting from 2021-12-01 00:00:00+00:00 ending at 2021-12-05 00:00:00+00:00
 ```
 
+## Example configuration file
+
+```
+./python_cli.py -c parser.conf
+```
+
+parser.conf:
+```
+[directory]
+~
+
+[start_time]
+2021-12-01T00:00:00+00:00
+
+[end_time]
+2021-12-05T00:00:00+00:00
+
+[match_pattern]
+Hel[l]o \= 1
+goodbye
+pattern with space
+-i abc.?def.*
+
+[exclude_pattern]
+DEBUG
+```
+
 
 ## Linting
 

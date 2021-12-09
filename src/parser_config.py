@@ -28,9 +28,7 @@ class ParserConfig:
         if self.exclude_patterns is None:
             self.exclude_patterns = []
         if self.directory is not None:
-            print(f'directory {self.directory}')
             self.directory = pathlib.Path(self.directory).expanduser().resolve()
-            print(f'new directory {self.directory}')
 
     @staticmethod
     def prepare_patterns(pattern_list):

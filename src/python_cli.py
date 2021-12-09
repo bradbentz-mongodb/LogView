@@ -56,28 +56,20 @@ parser.add_argument(
     '--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*'
 )
 parser.add_argument('-c', '--config', type=file_path, help='configuration file')
+parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
 
 
 def main(args):
-    directory_path = pathlib.Path(args.directory).expanduser().resolve()
-
-    log_string = f'Viewing logs in {directory_path}'
-
-    if args.start_time:
-        log_string += f' starting from {args.start_time}'
-    if args.end_time:
-        log_string += f' ending at {args.end_time}'
-
-    print(log_string)
-
     args_parser_config = ParserConfig(
-        directory_path, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern
+        args.directory, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern
     )
-    file_parser_config = None
-    if args.config:
-        file_parser_config = ParserConfig.from_file(args.config)
-
+    file_parser_config = ParserConfig.from_file(args.config) if args.config else None
     parser_config = ParserConfig.merge(file_parser_config, args_parser_config)
+
+    if args.verbose:
+        print(f'Parsing logs in directory {parser_config.directory}')
+        print(parser_config)
+
     log_parser.main(parser_config)
 
 
