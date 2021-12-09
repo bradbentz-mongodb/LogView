@@ -11,7 +11,10 @@ def include_log_item(log_item, parser_config):
     if log_item is None:
         return False
     return log_item.matches_regex(
-        parser_config.match_pattern, parser_config.exclude_pattern
+        parser_config.match_pattern,
+        parser_config.case_insensitive_match_pattern,
+        parser_config.exclude_pattern,
+        parser_config.case_insensitive_exclude_pattern,
     ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time)
 
 
@@ -24,12 +27,20 @@ class LogItem:
     def append_log_line(self, log_line):
         self.log_lines.append(log_line)
 
-    def matches_regex(self, inclusion_regex=None, exclusion_regex=None):
+    def matches_regex(
+        self, inclusion_regex, case_insensitive_inclusion_regex, exclusion_regex, case_insensitive_exclusion_regex
+    ):
         if inclusion_regex:
             if not any(re.match(inclusion_regex, line) for line in self.log_lines):
                 return False
+        if case_insensitive_inclusion_regex:
+            if not any(re.match(case_insensitive_inclusion_regex, line, re.IGNORECASE) for line in self.log_lines):
+                return False
         if exclusion_regex:
             if any(re.match(exclusion_regex, line) for line in self.log_lines):
+                return False
+        if case_insensitive_exclusion_regex:
+            if any(re.match(case_insensitive_exclusion_regex, line, re.IGNORECASE) for line in self.log_lines):
                 return False
         return True
 

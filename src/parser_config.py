@@ -37,15 +37,31 @@ class ParserConfig:
 
     @property
     def match_pattern(self):
-        if self.match_patterns is None or len(self.match_patterns) == 0:
+        case_sensitive_patterns = [pattern for pattern in self.match_patterns if not pattern.startswith('-i ')]
+        if len(case_sensitive_patterns) == 0:
             return None
-        return self.prepare_patterns(self.match_patterns)
+        return self.prepare_patterns(case_sensitive_patterns)
 
     @property
     def exclude_pattern(self):
-        if self.exclude_patterns is None or len(self.exclude_patterns) == 0:
+        case_sensitive_patterns = [pattern for pattern in self.exclude_patterns if not pattern.startswith('-i ')]
+        if len(case_sensitive_patterns) == 0:
             return None
-        return self.prepare_patterns(self.exclude_patterns)
+        return self.prepare_patterns(case_sensitive_patterns)
+
+    @property
+    def case_insensitive_match_pattern(self):
+        case_insensitive_patterns = [pattern[3:] for pattern in self.match_patterns if pattern.startswith('-i ')]
+        if len(case_insensitive_patterns) == 0:
+            return None
+        return self.prepare_patterns(case_insensitive_patterns)
+
+    @property
+    def case_insensitive_exclude_pattern(self):
+        case_insensitive_patterns = [pattern[3:] for pattern in self.exclude_patterns if pattern.startswith('-i ')]
+        if len(case_insensitive_patterns) == 0:
+            return None
+        return self.prepare_patterns(case_insensitive_patterns)
 
     @staticmethod
     def from_file(config_file):
