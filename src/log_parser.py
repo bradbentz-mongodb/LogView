@@ -20,8 +20,10 @@ class LogItem:
         self.filename = filename
         self.timestamp = timestamp
         self.log_lines = [log_line]
+
     def append_log_line(self, log_line):
         self.log_lines.append(log_line)
+
     def matches_regex(self, inclusion_regex=None, exclusion_regex=None):
         if inclusion_regex:
             if not any(re.match(inclusion_regex, line) for line in self.log_lines):
@@ -30,18 +32,22 @@ class LogItem:
             if any(re.match(exclusion_regex, line) for line in self.log_lines):
                 return False
         return True
+
     def between_timestamps(self, start_time, end_time):
         if start_time and self.timestamp < start_time:
             return False
         if end_time and self.timestamp > end_time:
             return False
         return True
+
     def __str__(self):
         timestamp_string = self.timestamp.isoformat()
         return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
 
+
 def keyfunc(log_item):
     return log_item.timestamp
+
 
 def extract_timestamp(line):
     timestamp_string = re.search(timestamp_pattern, line)
@@ -50,6 +56,7 @@ def extract_timestamp(line):
         # TODO: handle edge case where log line doesn't actually have a timestamp but there is a timestamp in the log message
         return parse(timestamp_string.group(0))
     return None
+
 
 def main(parser_config):
 
@@ -81,6 +88,7 @@ def main(parser_config):
     with open('output.txt', 'w') as log_output:
         results = [str(log_item) for log_item in merged]
         log_output.writelines(results)
+
 
 if __name__ == "__main__":
     try:

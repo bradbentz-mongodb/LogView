@@ -19,6 +19,13 @@ def dir_path(string):
         raise Exception(f'Invalid directory {string}')
 
 
+def file_path(string):
+    if os.path.isfile(string):
+        return string
+    else:
+        raise Exception(f'Invalid file {string}')
+
+
 def input_date(string):
     try:
         return parse(string)
@@ -38,7 +45,6 @@ parser.add_argument(
     metavar='directory',
     type=dir_path,
     help='directory containing log files to view',
-    default='.',
     nargs='?',
 )
 parser.add_argument('--start-time', type=input_date, help='show logs after this time')
@@ -49,11 +55,11 @@ parser.add_argument(
 parser.add_argument(
     '--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*'
 )
-parser.add_argument('-c', '--config', type=argparse.FileType('r', encoding='UTF-8'), help='configuration file')
+parser.add_argument('-c', '--config', type=file_path, help='configuration file')
 
 
 def main(args):
-    directory_path = pathlib.Path(args.directory).resolve()
+    directory_path = pathlib.Path(args.directory).expanduser().resolve()
 
     log_string = f'Viewing logs in {directory_path}'
 
@@ -64,14 +70,14 @@ def main(args):
 
     print(log_string)
 
-    if args.config:
-        print(f'Reading from configuration file {args.config}')
-        return
-
-    parser_config = ParserConfig(
+    args_parser_config = ParserConfig(
         directory_path, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern
     )
+    file_parser_config = None
+    if args.config:
+        file_parser_config = ParserConfig.from_file(args.config)
 
+    parser_config = ParserConfig.merge(file_parser_config, args_parser_config)
     log_parser.main(parser_config)
 
 
