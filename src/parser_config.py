@@ -78,11 +78,15 @@ class ParserConfig:
 
         start_time = None
         if parser.has_section('start_time'):
-            start_time = parse(list(parser['start_time'])[0])
+            start_time_list = list(parser['start_time'])
+            if len(start_time_list) > 0:
+                start_time = parse(start_time_list[0])
 
         end_time = None
         if parser.has_section('end_time'):
-            end_time = parse(list(parser['end_time'])[0])
+            end_time_list = list(parser['end_time'])
+            if len(end_time_list) > 0:
+                end_time = parse(end_time_list[0])
 
         match_patterns = []
         if parser.has_section('match_pattern'):
