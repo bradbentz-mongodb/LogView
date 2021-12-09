@@ -55,6 +55,7 @@ parser.add_argument(
 parser.add_argument(
     '--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*'
 )
+parser.add_argument('--dry-run', action='store_true', help='dry run')
 parser.add_argument('-c', '--config', type=file_path, help='configuration file')
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
 
@@ -68,7 +69,13 @@ def main(args):
 
     if args.verbose:
         print(f'Parsing logs in directory {parser_config.directory}')
+        print(
+            f'Using following regexes\n\tcase sensitive match: {parser_config.match_pattern}\n\tcase insensitive match: {parser_config.case_insensitive_match_pattern}\n\tcase sensitive exclude: {parser_config.exclude_pattern}\n\tcase insensitive exclude {parser_config.case_insensitive_exclude_pattern}'
+        )
         print(parser_config)
+
+    if args.dry_run:
+        return
 
     log_parser.main(parser_config)
 

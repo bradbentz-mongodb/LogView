@@ -53,7 +53,8 @@ class LogItem:
 
     def __str__(self):
         timestamp_string = self.timestamp.isoformat()
-        return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{self.log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
+        log_lines = '\n'.join(self.log_lines)
+        return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
 
 
 def keyfunc(log_item):
