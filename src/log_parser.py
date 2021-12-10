@@ -2,6 +2,7 @@ import re
 from dateutil.parser import parse
 import heapq
 import os
+import fnmatch
 
 timestamp_pattern = '\\d{4}\\-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}'
 extracted_lines = []
@@ -15,8 +16,18 @@ def include_log_item(log_item, parser_config):
         parser_config.case_insensitive_match_pattern,
         parser_config.exclude_pattern,
         parser_config.case_insensitive_exclude_pattern,
-    ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time)
+    ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time) and (len(log_item.log_lines) >= parser_config.min_log_line_length)
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 class LogItem:
     def __init__(self, filename, timestamp, log_line):
@@ -47,19 +58,18 @@ class LogItem:
     def between_timestamps(self, start_time, end_time):
         if start_time and self.timestamp < start_time:
             return False
-        if end_time and self.timestamp > end_time:
+        if end_time and self.timestamp >= end_time:
             return False
         return True
 
     def __str__(self):
         timestamp_string = self.timestamp.isoformat()
         log_lines = '\n'.join(self.log_lines)
-        return f"[filename:{self.filename}]\n timestamp:{timestamp_string}\n\tlog_lines:{log_lines}\n\t\tlog_line_length:{len(self.log_lines)}\n\n"
+        return f"{bcolors.OKBLUE}[{self.filename}]{bcolors.ENDC}\n{bcolors.OKGREEN}{timestamp_string}{bcolors.ENDC} {log_lines}\n"
 
 
 def keyfunc(log_item):
     return log_item.timestamp
-
 
 def extract_timestamp(line):
     timestamp_string = re.search(timestamp_pattern, line)
@@ -69,12 +79,22 @@ def extract_timestamp(line):
         return parse(timestamp_string.group(0))
     return None
 
+def get_files(directory_path, file_patterns):
+    all_files = os.listdir(directory_path)
+    exclude_files = set()
+    for file_pattern in file_patterns:
+        files = fnmatch.filter(all_files, file_pattern)
+        print(files)
+        print(file_pattern)
+        exclude_files.update(files)
+    include_files = set(all_files) - exclude_files
+    return include_files
 
 def main(parser_config):
-
     directory_path = parser_config.directory
+    exclude_files = parser_config.exclude_files
 
-    for filename in os.listdir(directory_path):
+    for filename in get_files(directory_path, parser_config.exclude_files):
         if filename.endswith('.log'):
             file_path = os.path.join(directory_path, filename)
             with open(file_path) as log_input:
