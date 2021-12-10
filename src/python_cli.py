@@ -8,6 +8,7 @@ import datetime
 import pathlib
 import os
 import log_parser
+import time
 
 from parser_config import ParserConfig
 
@@ -33,7 +34,6 @@ def input_date(string):
         print(f'Could not parse timestamp {string}')
         raise
 
-
 def prepare_patterns(pattern_list):
     joined_patterns = '|'.join(pattern_list)
     return f'.*({joined_patterns}).*'
@@ -47,22 +47,25 @@ parser.add_argument(
     help='directory containing log files to view',
     nargs='?',
 )
-parser.add_argument('--start-time', type=input_date, help='show logs after this time')
-parser.add_argument('--end-time', type=input_date, help='show logs before this time')
+parser.add_argument('--exclude-files', type=str, action='extend', help='exclude files', nargs='*')
+parser.add_argument('--start-time', type=input_date, help='show logs after this time (inclusive)')
+parser.add_argument('--end-time', type=input_date, help='show logs before this time (exclusive)')
 parser.add_argument(
     '--match-pattern', type=str, action='extend', help='show logs matching the specified pattern', nargs='*'
 )
 parser.add_argument(
     '--exclude-pattern', type=str, action='extend', help='hide logs matching the specified pattern', nargs='*'
 )
+parser.add_argument('--min_log_line_length', type=int, help='show logs with number of lines greater than this integer')
 parser.add_argument('--dry-run', action='store_true', help='dry run')
 parser.add_argument('-c', '--config', type=file_path, help='configuration file')
 parser.add_argument('-v', '--verbose', action='store_true', help='verbose')
 
 
 def main(args):
+    start_time = time.time()
     args_parser_config = ParserConfig(
-        args.directory, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern
+        args.directory, args.exclude_files, args.start_time, args.end_time, args.match_pattern, args.exclude_pattern, args.min_log_line_length
     )
     file_parser_config = ParserConfig.from_file(args.config) if args.config else None
     parser_config = ParserConfig.merge(file_parser_config, args_parser_config)
@@ -78,6 +81,7 @@ def main(args):
         return
 
     log_parser.main(parser_config)
+    print(f"--- {time.time() - start_time} seconds ---")
 
 
 if __name__ == '__main__':
