@@ -3,10 +3,12 @@ from dateutil.parser import parse
 import heapq
 import os
 import fnmatch
+import datetime
+import pytz
 
 timestamp_pattern = '\\d{4}\\-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\+\\d{4}'
 extracted_lines = []
-
+utc = pytz.UTC
 
 def include_log_item(log_item, parser_config):
     if log_item is None:
@@ -14,7 +16,7 @@ def include_log_item(log_item, parser_config):
     return log_item.matches_regex(
         parser_config.inclusion_matcher,
         parser_config.exclusion_matcher
-    ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time) and (len(log_item.log_lines) >= parser_config.min_log_line_length)
+    ) and log_item.between_timestamps(utc.localize(parser_config.start_time), utc.localize(parser_config.end_time)) and (len(log_item.log_lines) >= parser_config.min_log_line_length)
 
 
 class bcolors:
