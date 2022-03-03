@@ -12,11 +12,10 @@ def include_log_item(log_item, parser_config):
     if log_item is None:
         return False
     return log_item.matches_regex(
-        parser_config.match_pattern,
-        parser_config.case_insensitive_match_pattern,
-        parser_config.exclude_pattern,
-        parser_config.case_insensitive_exclude_pattern,
+        parser_config.inclusion_matcher,
+        parser_config.exclusion_matcher
     ) and log_item.between_timestamps(parser_config.start_time, parser_config.end_time) and (len(log_item.log_lines) >= parser_config.min_log_line_length)
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -29,6 +28,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class LogItem:
     def __init__(self, filename, timestamp, log_line):
         self.filename = filename
@@ -38,21 +38,16 @@ class LogItem:
     def append_log_line(self, log_line):
         self.log_lines.append(log_line)
 
-    def matches_regex(
-        self, inclusion_regex, case_insensitive_inclusion_regex, exclusion_regex, case_insensitive_exclusion_regex
-    ):
-        if inclusion_regex:
-            if not any(re.match(inclusion_regex, line) for line in self.log_lines):
-                return False
-        if case_insensitive_inclusion_regex:
-            if not any(re.match(case_insensitive_inclusion_regex, line, re.IGNORECASE) for line in self.log_lines):
-                return False
-        if exclusion_regex:
-            if any(re.match(exclusion_regex, line) for line in self.log_lines):
-                return False
-        if case_insensitive_exclusion_regex:
-            if any(re.match(case_insensitive_exclusion_regex, line, re.IGNORECASE) for line in self.log_lines):
-                return False
+    def matches_regex(self, inclusion_matcher, exclusion_matcher):
+        """
+        One line in each of the log lines must match the inclusion matcher and no lines can match the exclusion matcher.
+        """
+        if inclusion_matcher:
+            if not any(inclusion_matcher.matches(line) for line in self.log_lines):
+                    return False
+        if exclusion_matcher:
+            if any(exclusion_matcher.matches(line) for line in self.log_lines):
+                    return False
         return True
 
     def between_timestamps(self, start_time, end_time):

@@ -72,9 +72,7 @@ def main(args):
 
     if args.verbose:
         print(f'Parsing logs in directory {parser_config.directory}')
-        print(
-            f'Using following regexes\n\tcase sensitive match: {parser_config.match_pattern}\n\tcase insensitive match: {parser_config.case_insensitive_match_pattern}\n\tcase sensitive exclude: {parser_config.exclude_pattern}\n\tcase insensitive exclude {parser_config.case_insensitive_exclude_pattern}'
-        )
+        print(f'Using the following inclusion matcher: {parser_config.inclusion_matcher} and exclusion matcher: {parser_config.exclusion_matcher}')
         print(parser_config)
 
     if args.dry_run:
