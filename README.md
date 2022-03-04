@@ -2,6 +2,19 @@
 
 View a directory of logs with one command. Sort logs across multiple files by timestamp and filter by common patterns.
 
+## Setup
+
+1. Create and activate a virtual environment:
+
+  ```bash
+  python3 -m venv venv && . venv/bin/activate
+  ```
+
+2. Install dependencies:
+
+  ```bash
+  ./install.sh
+  ```
 
 ## Components
 
